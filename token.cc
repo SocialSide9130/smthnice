@@ -4,7 +4,7 @@
 
 // Function Definitions
 Token *new_number_token(long value, char *position, unsigned int length) {
-	Token *token = (Token*)malloc(sizeof(Token));
+	Token *token = new Token;
 	token->kind = tNumber;
 	token->value = value;
 	token->position = position;
@@ -14,7 +14,7 @@ Token *new_number_token(long value, char *position, unsigned int length) {
 }
 
 Token *new_symbol_token(SymbolDetail detail, char *position, unsigned int length) {
-	Token *token = (Token*)malloc(sizeof(Token));
+	Token *token = new Token;
 	token->kind = tSymbol;
 	token->detail = detail;
 	token->position = position;
@@ -24,7 +24,7 @@ Token *new_symbol_token(SymbolDetail detail, char *position, unsigned int length
 }
 
 Token *new_eof_token(char *position) {
-	Token *token = (Token*)malloc(sizeof(Token));
+	Token *token = new Token;
 	token->kind = tEof;
 	token->position = position;
 	token->length = 1;
