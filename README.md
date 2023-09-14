@@ -1,0 +1,2 @@
+# smthnice
+making something nice
