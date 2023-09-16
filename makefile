@@ -14,6 +14,7 @@ clean:
 	rm smth tmp*
 
 test:
+	make debug
 	./test.sh
 	make clean
 
