@@ -9,6 +9,10 @@ typedef enum {
 	nSub,
 	nMul,
 	nDiv,
+	nEqual,
+	nNotEqual,
+	nLess,
+	nLessEqual,
 } NodeKind;
 
 typedef struct Node Node;
@@ -18,11 +22,13 @@ struct Node {
 	Node *lhs, *rhs;
 };
 
-Node *parse(Token *token);
-Node  *expr(            );
-Node   *add(            );
-Node   *mul(            );
-Node *unary(            );
-Node  *elem(            );
+Node      *parse(Token *token);
+Node   *equality(            );
+Node *relational(            );
+Node       *expr(            );
+Node        *add(            );
+Node        *mul(            );
+Node      *unary(            );
+Node       *elem(            );
 
 #endif

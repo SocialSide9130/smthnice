@@ -53,6 +53,26 @@ void codegen(Node *node) {
 		printasm(1, "cqo");
 		printasm(1, "idiv rdi");
 		break;
+	case nEqual:
+		printasm(1, "cmp rax, rdi");
+		printasm(1, "sete al");
+		printasm(1, "movzb rax, al");
+		break;
+	case nNotEqual:
+		printasm(1, "cmp rax, rdi");
+		printasm(1, "setne al");
+		printasm(1, "movzb rax, al");
+		break;
+	case nLess:
+		printasm(1, "cmp rax, rdi");
+		printasm(1, "setl al");
+		printasm(1, "movzb rax, al");
+		break;
+	case nLessEqual:
+		printasm(1, "cmp rax, rdi");
+		printasm(1, "setle al");
+		printasm(1, "movzb rax, al");
+		break;
 	default:
 		break;
 	}

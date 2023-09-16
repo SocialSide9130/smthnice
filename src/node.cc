@@ -41,7 +41,59 @@ Node *new_number_node(long value) {
 
 Node *parse(Token *token) {
 	cur = token;
-	return expr();
+	return equality();
+}
+
+Node *equality() {
+	Node *lhs = relational();
+
+	while (cur->kind != tEof) {
+		if (cur->kind == tSymbol) {
+			switch (cur->detail) {
+			case dDblEqual:
+				cur = cur->next;
+				lhs = new_binary_node(nEqual, lhs, relational());
+				break;
+			case dExclamationEqual:
+				cur = cur->next;
+				lhs = new_binary_node(nNotEqual, lhs, relational());
+				break;
+			default:
+				return lhs;
+			}
+		}
+	}
+	return lhs;
+}
+
+Node *relational() {
+	Node *lhs = expr();
+
+	while (cur->kind != tEof) {
+		if (cur->kind == tSymbol) {
+			switch (cur->detail) {
+			case dLess:			
+				cur = cur->next;
+				lhs = new_binary_node(nLess, lhs, expr());
+				break;
+			case dLessEqual:
+				cur = cur->next;
+				lhs = new_binary_node(nLessEqual, lhs, expr());
+				break;
+			case dGreaterEqual:
+				cur = cur->next;
+				lhs = new_binary_node(nLess, expr(), lhs);
+				break;
+			case dGreater:
+				cur = cur->next;
+				lhs = new_binary_node(nLessEqual, expr(), lhs);
+				break;
+			default:
+				return lhs;
+			}
+		}
+	}
+	return lhs;
 }
 
 Node *expr() {
@@ -98,7 +150,7 @@ Node *unary() {
 	}
 
 	if (read_symbol(dPlus)) {
-		return elem();
+		return unary();
 	}
 
 	return elem();
