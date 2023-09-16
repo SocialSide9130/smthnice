@@ -22,7 +22,7 @@ typedef enum {
 	tReserved,
 	tNumber,
 	tIdentifier,
-	tSymbol,
+	tOperand,
 	tEof,
 } TokenKind;
 
@@ -66,13 +66,13 @@ typedef enum {
 	dGreaterEqual     =    detail2('>', '='), // ">="
 	dMinusGreater     =    detail2('-', '>'), // "->"
 	dEqualGreater     =    detail2('=', '>'), // "=>"
-} SymbolDetail;
+} OperandDetail;
 
 
 typedef struct Token Token;
 struct Token {
 	TokenKind kind;
-	SymbolDetail detail;
+	OperandDetail detail;
 	long value;
 	char *position;
 	unsigned int length;

@@ -11,8 +11,8 @@ inline bool expect_number() {
 	return cur->kind == tNumber;
 }
 
-bool read_symbol(SymbolDetail symbol) {
-	if (cur->kind == tSymbol && cur->detail == symbol) {
+bool read_operand(OperandDetail symbol) {
+	if (cur->kind == tOperand && cur->detail == symbol) {
 		cur = cur->next;
 		return true;
 	}
@@ -48,7 +48,7 @@ Node *statement() {
 	Node *node;
 	for (;;) {
 		node = expr();
-		if (!read_symbol(dSemiColon)) {
+		if (!read_operand(dSemiColon)) {
 			fprintf(stderr, "Unexpected token: ");
 			for (unsigned int i = 0; i < cur->length; ++i)
 				fprintf(stderr, "%c", *cur->position+i);
@@ -67,7 +67,7 @@ Node *expr() {
 Node *assign() {
 	Node *node = equality();
 	for (;;) {
-		if (read_symbol(dEqual)) {
+		if (read_operand(dEqual)) {
 			cur = cur->next;
 			node = new_binary_node(nAssign, node, assign());
 		}
@@ -80,9 +80,9 @@ Node *equality() {
 	Node *lhs = relational();
 
 	for (;;) {
-		if (read_symbol(dDblEqual))
+		if (read_operand(dDblEqual))
 			lhs = new_binary_node(nEqual, lhs, relational());
-		else if (read_symbol(dExclamationEqual))
+		else if (read_operand(dExclamationEqual))
 			lhs = new_binary_node(nNotEqual, lhs, relational());
 		else
 			return lhs;
@@ -94,13 +94,13 @@ Node *relational() {
 	Node *lhs = add();
 
 	for (;;) {
-		if (read_symbol(dLess))
+		if (read_operand(dLess))
 			lhs = new_binary_node(nLess, lhs, add());
-		else if (read_symbol(dLessEqual))
+		else if (read_operand(dLessEqual))
 			lhs = new_binary_node(nLessEqual, lhs, add());
-		else if (read_symbol(dGreaterEqual))
+		else if (read_operand(dGreaterEqual))
 			lhs = new_binary_node(nLess, add(), lhs);
-		else if (read_symbol(dGreater))
+		else if (read_operand(dGreater))
 			lhs = new_binary_node(nLessEqual, add(), lhs);
 		else
 			return lhs;
@@ -112,9 +112,9 @@ Node *add() {
 	Node *lhs = mul();
 
 	for (;;) {
-		if (read_symbol(dPlus))
+		if (read_operand(dPlus))
 			lhs = new_binary_node(nAdd, lhs, relational());
-		else if (read_symbol(dMinus))
+		else if (read_operand(dMinus))
 			lhs = new_binary_node(nSub, lhs, relational());
 		else
 			return lhs;
@@ -126,9 +126,9 @@ Node *mul() {
 	Node *lhs = unary();
 
 	for (;;) {
-		if (read_symbol(dAsterisk))
+		if (read_operand(dAsterisk))
 			lhs = new_binary_node(nMul, lhs, relational());
-		else if (read_symbol(dSlash))
+		else if (read_operand(dSlash))
 			lhs = new_binary_node(nDiv, lhs, relational());
 		else
 			return lhs;
@@ -137,11 +137,11 @@ Node *mul() {
 }
 
 Node *unary() {
-	if (read_symbol(dMinus)) {
+	if (read_operand(dMinus)) {
 		return new_binary_node(nSub, new_number_node(0), unary());
 	}
 
-	if (read_symbol(dPlus)) {
+	if (read_operand(dPlus)) {
 		return unary();
 	}
 
@@ -149,9 +149,9 @@ Node *unary() {
 }
 
 Node *elem() {
-	if (read_symbol(dOParenthesis)) {
+	if (read_operand(dOParenthesis)) {
 		Node *e = expr();
-		if (!read_symbol(dCParenthesis)) {
+		if (!read_operand(dCParenthesis)) {
 			fprintf(stderr, "There must be a close parenthesis.\n");
 			exit(1);
 		}
