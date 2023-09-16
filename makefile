@@ -1,5 +1,11 @@
+src=./src
+files=$(src)/token.cc $(src)/node.cc $(src)/codegen.cc $(src)/main.cc
+
 debug:
-	g++ -g -std=c++17 -Wextra -o smth token.cc node.cc codegen.cc main.cc -D Smth_dbg -fsanitize=undefined
+	g++ -g -std=c++17 -Wextra -o smth $(files) -fsanitize=undefined
+
+debug_stdin:
+	g++ -g -std=c++17 -Wextra -o smth $(files) -D Smth_dbg -fsanitize=undefined
 
 release:
 	g++ -std=c++17 -O3 -o smth token.cc node.cc codegen.cc main.cc
@@ -7,4 +13,8 @@ release:
 clean:
 	rm smth tmp*
 
-.PHONY: clean
+test:
+	./test.sh
+	make clean
+
+.PHONY: clean test
