@@ -41,83 +41,83 @@ Node *new_number_node(long value) {
 
 Node *parse(Token *token) {
 	cur = token;
-	return equality();
+	return statement();
+}
+
+Node *statement() {
+	Node *node;
+	for (;;) {
+		node = expr();
+		if (!read_symbol(dSemiColon)) {
+			fprintf(stderr, "Unexpected token: ");
+			for (unsigned int i = 0; i < cur->length; ++i)
+				fprintf(stderr, "%c", *cur->position+i);
+			fprintf(stderr, ".");
+			exit(1);
+		}
+		break;
+	}
+	return node;
+}
+
+Node *expr() {
+	return assign();
+}
+
+Node *assign() {
+	Node *node = equality();
+	for (;;) {
+		if (read_symbol(dEqual)) {
+			cur = cur->next;
+			node = new_binary_node(nAssign, node, assign());
+		}
+		break;
+	}
+	return node;
 }
 
 Node *equality() {
 	Node *lhs = relational();
 
-	while (cur->kind != tEof) {
-		if (cur->kind == tSymbol) {
-			switch (cur->detail) {
-			case dDblEqual:
-				cur = cur->next;
-				lhs = new_binary_node(nEqual, lhs, relational());
-				break;
-			case dExclamationEqual:
-				cur = cur->next;
-				lhs = new_binary_node(nNotEqual, lhs, relational());
-				break;
-			default:
-				return lhs;
-			}
-		}
+	for (;;) {
+		if (read_symbol(dDblEqual))
+			lhs = new_binary_node(nEqual, lhs, relational());
+		else if (read_symbol(dExclamationEqual))
+			lhs = new_binary_node(nNotEqual, lhs, relational());
+		else
+			return lhs;
 	}
 	return lhs;
 }
 
 Node *relational() {
-	Node *lhs = expr();
+	Node *lhs = add();
 
-	while (cur->kind != tEof) {
-		if (cur->kind == tSymbol) {
-			switch (cur->detail) {
-			case dLess:			
-				cur = cur->next;
-				lhs = new_binary_node(nLess, lhs, expr());
-				break;
-			case dLessEqual:
-				cur = cur->next;
-				lhs = new_binary_node(nLessEqual, lhs, expr());
-				break;
-			case dGreaterEqual:
-				cur = cur->next;
-				lhs = new_binary_node(nLess, expr(), lhs);
-				break;
-			case dGreater:
-				cur = cur->next;
-				lhs = new_binary_node(nLessEqual, expr(), lhs);
-				break;
-			default:
-				return lhs;
-			}
-		}
+	for (;;) {
+		if (read_symbol(dLess))
+			lhs = new_binary_node(nLess, lhs, add());
+		else if (read_symbol(dLessEqual))
+			lhs = new_binary_node(nLessEqual, lhs, add());
+		else if (read_symbol(dGreaterEqual))
+			lhs = new_binary_node(nLess, add(), lhs);
+		else if (read_symbol(dGreater))
+			lhs = new_binary_node(nLessEqual, add(), lhs);
+		else
+			return lhs;
 	}
 	return lhs;
-}
-
-Node *expr() {
-	return add();
 }
 
 Node *add() {
 	Node *lhs = mul();
 
-	while (cur->kind != tEof) {
-		if (cur->kind == tSymbol) {
-			switch (cur->detail) {
-			case dPlus:
-				cur = cur->next;
-				lhs = new_binary_node(nAdd, lhs, mul());
-				break;
-			case dMinus:
-				cur = cur->next;
-				lhs = new_binary_node(nSub, lhs, mul());
-				break;
-			default:
-				return lhs;
-			}
-		}
+	for (;;) {
+		if (read_symbol(dPlus))
+			lhs = new_binary_node(nAdd, lhs, relational());
+		else if (read_symbol(dMinus))
+			lhs = new_binary_node(nSub, lhs, relational());
+		else
+			return lhs;
 	}
 	return lhs;
 }
@@ -125,21 +125,13 @@ Node *add() {
 Node *mul() {
 	Node *lhs = unary();
 
-	while (cur->kind != tEof) {
-		if (cur->kind == tSymbol) {
-			switch (cur->detail) {
-			case dAsterisk:
-				cur = cur->next;
-				lhs = new_binary_node(nMul, lhs, unary());
-				break;
-			case dSlash:
-				cur = cur->next;
-				lhs = new_binary_node(nDiv, lhs, unary());
-				break;
-			default:
-				return lhs;
-			}
-		}
+	for (;;) {
+		if (read_symbol(dAsterisk))
+			lhs = new_binary_node(nMul, lhs, relational());
+		else if (read_symbol(dSlash))
+			lhs = new_binary_node(nDiv, lhs, relational());
+		else
+			return lhs;
 	}
 	return lhs;
 }

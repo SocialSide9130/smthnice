@@ -13,6 +13,7 @@ typedef enum {
 	nNotEqual,
 	nLess,
 	nLessEqual,
+	nAssign,
 } NodeKind;
 
 typedef struct Node Node;
@@ -23,9 +24,11 @@ struct Node {
 };
 
 Node      *parse(Token *token);
+Node  *statement(            );
+Node       *expr(            );
+Node     *assign(            );
 Node   *equality(            );
 Node *relational(            );
-Node       *expr(            );
 Node        *add(            );
 Node        *mul(            );
 Node      *unary(            );
