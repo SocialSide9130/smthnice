@@ -14,6 +14,8 @@ assert() {
   fi
 }
 
+echo "=== TESTS ==="
+
 assert 0 '0;'
 assert 42 '42;'
 assert 21 '5+20-4;'
@@ -39,4 +41,5 @@ assert 1 '34 >= 12;'
 assert 0 '12 > 34;'
 assert 0 '12 >= 34;'
 
-echo OK
+echo "=== ALL TESTS PASSED ==="
+echo
