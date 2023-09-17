@@ -16,7 +16,6 @@ constexpr inline int detail3(const char c1, const char c2, const char c3) {
 	return (i1 << 16) + (i2 << 8) + i3;
 }
 
-
 // Type Definitions
 typedef enum {
 	tReserved,
@@ -25,7 +24,6 @@ typedef enum {
 	tOperand,
 	tEof,
 } TokenKind;
-
 
 typedef enum {
 	dPlus             =         detail1('+'), //  "+"
@@ -66,8 +64,11 @@ typedef enum {
 	dGreaterEqual     =    detail2('>', '='), // ">="
 	dMinusGreater     =    detail2('-', '>'), // "->"
 	dEqualGreater     =    detail2('=', '>'), // "=>"
+	dIf               =    detail2('i', 'f'), // "if"
+	
+	dElse             =    detail3('e', 'l', 's'), // "else"
+	dReturn           =    detail3('r', 'e', 't'), // "return"
 } OperandDetail;
-
 
 typedef struct Token Token;
 struct Token {

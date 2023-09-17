@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "token.hh"
 
@@ -309,6 +310,31 @@ Token *tokenize(char *code) {
 			cur = cur->next;
 			p = after;
 			continue;
+		}
+
+		if (strncmp("return", p, 6) == 0 && !(isalpha(p[6]) || p[6] == '_')) {
+			cur->next = new_operand_token(dReturn, p, 6);
+			cur = cur->next;
+			p += 6;
+			continue;
+		}
+
+		if (strncmp("if", p, 2) == 0 && !(isalpha(p[2]) || p[2] == '_')) {
+			cur->next = new_operand_token(dIf, p, 2);
+			cur = cur->next;
+			p += 2;
+			continue;
+		}
+
+		if (strncmp("else", p, 4) == 0 && !(isalpha(p[4]) || p[4] == '_')) {
+			cur->next = new_operand_token(dElse, p, 4);
+			cur = cur->next;
+			p += 4;
+			continue;
+		}
+
+		if (isalpha(*p) || *p == '_') {
+			
 		}
 	}
 

@@ -6,6 +6,7 @@
 
 
 Token *cur;
+Node *code[128];
 
 inline bool expect_number() {
 	return cur->kind == tNumber;
@@ -17,6 +18,17 @@ bool read_operand(OperandDetail symbol) {
 		return true;
 	}
 	return false;
+}
+
+Node *new_unary_node(NodeKind kind, Node *node) {
+	Node *unary = new Node;
+	if (unary == NULL) {
+		fprintf(stderr, "Error: Out of memory.\n");
+		exit(1);
+	}
+	unary->kind = kind;
+	unary->lhs = node;
+	return unary;
 }
 
 Node *new_binary_node(NodeKind kind, Node *lhs, Node *rhs) {
@@ -39,6 +51,14 @@ Node *new_number_node(long value) {
 	return node;
 }
 
+void program(Token *token) {
+	int i = 0;
+	cur = token;
+	while (cur->kind != tEof)
+		code[i++] = statement();
+	code[i] = nullptr;
+}
+
 Node *parse(Token *token) {
 	cur = token;
 	return statement();
@@ -46,16 +66,18 @@ Node *parse(Token *token) {
 
 Node *statement() {
 	Node *node;
-	for (;;) {
+	if (read_operand(dReturn)) {
+		node = new_unary_node(nReturn, expr());
+	} else {
 		node = expr();
-		if (!read_operand(dSemiColon)) {
-			fprintf(stderr, "Unexpected token: ");
-			for (unsigned int i = 0; i < cur->length; ++i)
-				fprintf(stderr, "%c", *cur->position+i);
-			fprintf(stderr, ".");
-			exit(1);
-		}
-		break;
+	}
+	
+	if (!read_operand(dSemiColon)) {
+		fprintf(stderr, "Unexpected token: ");
+		for (unsigned int i = 0; i < cur->length; ++i)
+			fprintf(stderr, "%c", *cur->position+i);
+		fprintf(stderr, ".");
+		exit(1);
 	}
 	return node;
 }

@@ -33,6 +33,15 @@ void codegen(Node *node) {
 		return;
 	}
 
+	if (node->kind == nReturn) {
+		codegen(node->lhs);
+		printasm(1, "pop rax");
+		printasm(1, "mov rsp, rbp");
+		printasm(1, "pop rbp");
+		printasm(1, "ret");
+		return;
+	}
+
 	codegen(node->lhs);
 	codegen(node->rhs);
 

@@ -14,6 +14,11 @@ typedef enum {
 	nLess,
 	nLessEqual,
 	nAssign,
+	nReturn,
+	nIf,
+	nElse,
+	nWhile,
+	nFor,
 } NodeKind;
 
 typedef struct Node Node;
@@ -23,6 +28,13 @@ struct Node {
 	Node *lhs, *rhs;
 };
 
+typedef struct NodeVector NodeVector;
+struct NodeVector {
+	Node **list;
+	unsigned int tail, max;
+};
+
+void     program(Token *token);
 Node      *parse(Token *token);
 Node  *statement(            );
 Node       *expr(            );

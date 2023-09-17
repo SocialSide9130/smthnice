@@ -6,6 +6,8 @@
 #include "node.hh"
 #include "codegen.hh"
 
+extern Node *code[128];
+
 int main(int argc, char *argv[]) {
 	char *src;
 #ifdef Smth_dbg
@@ -16,11 +18,15 @@ int main(int argc, char *argv[]) {
 	src = argv[1];
 #endif
 	Token *tokens = tokenize(src);
-	Node *node = parse(tokens);
+	program(tokens);
+	Node **node = code;
 
 	prologue();
-	codegen(node);
-	epilogue();
+	while (*node) {
+		codegen(*node);
+		epilogue();
+		++node;
+	}
 
 	return 0;
 }
