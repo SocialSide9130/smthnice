@@ -8,7 +8,7 @@ debug_stdin:
 	g++ -g -std=c++17 -Wextra -o smth $(files) -D Smth_dbg -fsanitize=undefined
 
 release:
-	g++ -std=c++17 -O3 -o smth token.cc node.cc codegen.cc main.cc
+	g++ -std=c++17 -O3 -o smth $(files)
 
 clean:
 	rm smth tmp*

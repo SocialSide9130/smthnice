@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "token.hh"
 #include "node.hh"
@@ -7,7 +8,16 @@
 
 Token *cur;
 Node *code[128];
-Token *localVariables[128];
+
+typedef struct LocalVariable LocalVariable;
+struct LocalVariable {
+	LocalVariable *next;
+	char *name;
+	unsigned int length;
+	int offset;
+};
+
+LocalVariable *localvariables;
 
 inline bool expect_number() {
 	return cur->kind == tNumber;
@@ -21,21 +31,16 @@ bool read_operator(OperatorDetail symbol) {
 	return false;
 }
 
-int get_localvariable_offset() {
-	
+LocalVariable *find_localvariable() {
+	for (LocalVariable *var = localvariables; var; var = var->next) {
+		if (var->length == cur->length && !memcmp(var->name, cur->position, var->length))
+			return var;
+	}
+	return nullptr;
 }
 
 bool expect_identifier() {
 	return cur->kind == tIdentifier;
-}
-
-Node *new_identifier_node(char *name) {
-	Node *identifier = new Node;
-	if (identifier == nullptr) {
-		fprintf(stderr, "Error: Out of memory.\n");
-		exit(1);
-	}
-	identifier->kind = nLocalVariable;
 }
 
 Node *new_unary_node(NodeKind kind, Node *node) {
@@ -72,6 +77,7 @@ Node *new_number_node(long value) {
 void program(Token *token) {
 	int i = 0;
 	cur = token;
+	localvariables = new LocalVariable;
 	while (cur->kind != tEof)
 		code[i++] = statement();
 	code[i] = nullptr;
@@ -198,9 +204,23 @@ Node *elem() {
 	}
 
 	if (expect_identifier()) {
-		Node *node = new Node;
+		LocalVariable *lvar;
+		Node *node;
+
+		lvar = find_localvariable();
+		node = new Node;
 		node->kind = nLocalVariable;
-		node->offset = (cur->position[0] - 'a' + 1) * 8;
+		if (lvar != nullptr) {
+			node->offset = lvar->offset;
+		} else {
+			lvar = new LocalVariable;
+			lvar->next = localvariables;
+			lvar->name = cur->position;
+			lvar->length = cur->length;
+			lvar->offset = localvariables->offset + 8;
+			node->offset = lvar->offset;
+			localvariables = lvar;
+		}
 		cur = cur->next;
 		return node;
 	}

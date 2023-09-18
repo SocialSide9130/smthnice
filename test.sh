@@ -46,5 +46,8 @@ assert 30 'a=42-12;a;'
 assert 30 'a=42;a-12;'
 assert 15 'a = 7; z = 8; c=a+z; c;'
 
+assert 42 'hoge=42;hoge;'
+assert 42 'hoge=21;fuga=2;piyo=hoge*fuga;piyo;'
+
 echo "=== ALL TESTS PASSED ==="
 echo
