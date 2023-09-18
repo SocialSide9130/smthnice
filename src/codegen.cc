@@ -3,7 +3,6 @@
 
 #include "codegen.hh"
 
-
 void printasm(int tabs, const char *format, ...) {
 	va_list args;
 	
@@ -17,9 +16,7 @@ void printasm(int tabs, const char *format, ...) {
 }
 
 void prologue() {
-	printasm(0, ".intel_syntax noprefix");
-	printasm(0, ".globl main");
-	printasm(0, "main:");
+	
 }
 
 void epilogue() {
@@ -27,9 +24,31 @@ void epilogue() {
 	printasm(1, "ret");
 }
 
+void gen_leftvalue(Node *node) {
+	printasm(1, "mov rax, rbp");
+	printasm(1, "sub rax, %d", node->offset);
+	printasm(1, "push rax");
+}
+
 void codegen(Node *node) {
-	if (node->kind == nNumber) {
+	switch (node->kind) {
+	case nNumber:
 		printasm(1, "push %d", node->value);
+		return;
+	case nLocalVariable:
+		gen_leftvalue(node);
+		printasm(1, "pop rax");
+		printasm(1, "mov rax, [rax]");
+		printasm(1, "push rax");
+		return;
+	case nAssign:
+		gen_leftvalue(node->lhs);
+		codegen(node->rhs);
+
+		printasm(1, "pop rdi");
+		printasm(1, "pop rax");
+		printasm(1, "mov [rax], rdi");
+		printasm(1, "push rdi");
 		return;
 	}
 

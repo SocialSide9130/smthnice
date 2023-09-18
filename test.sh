@@ -41,5 +41,10 @@ assert 1 '34 >= 12;'
 assert 0 '12 > 34;'
 assert 0 '12 >= 34;'
 
+assert 12 'a=12;a;'
+assert 30 'a=42-12;a;'
+assert 30 'a=42;a-12;'
+assert 15 'a = 7; z = 8; c=a+z; c;'
+
 echo "=== ALL TESTS PASSED ==="
 echo

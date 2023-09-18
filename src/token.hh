@@ -21,7 +21,7 @@ typedef enum {
 	tReserved,
 	tNumber,
 	tIdentifier,
-	tOperand,
+	tOperator,
 	tEof,
 } TokenKind;
 
@@ -68,12 +68,12 @@ typedef enum {
 	
 	dElse             =    detail3('e', 'l', 's'), // "else"
 	dReturn           =    detail3('r', 'e', 't'), // "return"
-} OperandDetail;
+} OperatorDetail;
 
 typedef struct Token Token;
 struct Token {
 	TokenKind kind;
-	OperandDetail detail;
+	OperatorDetail detail;
 	long value;
 	char *position;
 	unsigned int length;

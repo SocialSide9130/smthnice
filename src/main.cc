@@ -21,12 +21,24 @@ int main(int argc, char *argv[]) {
 	program(tokens);
 	Node **node = code;
 
-	prologue();
+	// prologue();
+	printasm(0, ".intel_syntax noprefix");
+	printasm(0, ".globl main");
+	printasm(0, "main:");
+
+	printasm(1, "push rbp");
+	printasm(1, "mov rbp, rsp");
+	printasm(1, "sub rsp, 208");
 	while (*node) {
 		codegen(*node);
-		epilogue();
+		printasm(1, "pop rax");
+		// epilogue();
 		++node;
 	}
+
+	printasm(1, "mov rsp, rbp");
+	printasm(1, "pop rbp");
+	printasm(1, "ret");
 
 	return 0;
 }

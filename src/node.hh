@@ -19,6 +19,7 @@ typedef enum {
 	nElse,
 	nWhile,
 	nFor,
+	nLocalVariable,
 } NodeKind;
 
 typedef struct Node Node;
@@ -26,12 +27,7 @@ struct Node {
 	NodeKind kind;
 	long value;
 	Node *lhs, *rhs;
-};
-
-typedef struct NodeVector NodeVector;
-struct NodeVector {
-	Node **list;
-	unsigned int tail, max;
+	int offset;
 };
 
 void     program(Token *token);
