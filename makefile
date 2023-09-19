@@ -7,6 +7,9 @@ debug:
 debug_stdin:
 	g++ -g -std=c++17 -Wextra -o smth $(files) -D Smth_dbg -fsanitize=undefined
 
+stdin_debug:
+	make debug_stdin
+
 release:
 	g++ -std=c++17 -O3 -o smth $(files)
 
@@ -18,4 +21,4 @@ test:
 	./test.sh
 	make clean
 
-.PHONY: clean test
+.PHONY: clean test stdin_debug

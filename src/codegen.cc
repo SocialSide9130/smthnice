@@ -3,6 +3,8 @@
 
 #include "codegen.hh"
 
+int label_number;
+
 void printasm(int tabs, const char *format, ...) {
 	va_list args;
 	
@@ -50,16 +52,31 @@ void codegen(Node *node) {
 		printasm(1, "mov [rax], rdi");
 		printasm(1, "push rdi");
 		return;
-	}
-
-	if (node->kind == nReturn) {
+	case nReturn:
 		codegen(node->lhs);
 		printasm(1, "pop rax");
 		printasm(1, "mov rsp, rbp");
 		printasm(1, "pop rbp");
 		printasm(1, "ret");
 		return;
+	case nIf:
+		codegen(node->cond);
+		printasm(1, "pop rax");
+		printasm(1, "cmp rax, 0");
+		if (node->rhs != nullptr) {
+			printasm(1, "jne .Lelse%d", label_number);
+			codegen(node->rhs);
+			printasm(1, "jmp .Lend%d", label_number);
+			printasm(0, ".Lelse%d:", label_number);
+		} else {
+			printasm(1, "je .Lend%d", label_number);
+		}
+		codegen(node->lhs);
+		printasm(0, ".Lend%d:", label_number);
+		++label_number;
+		return;
 	}
+
 
 	codegen(node->lhs);
 	codegen(node->rhs);

@@ -19,6 +19,13 @@ struct LocalVariable {
 
 LocalVariable *localvariables;
 
+void error_() {
+	fprintf(stderr, "Unexpected token: ");
+	for (unsigned int i = 0; i < cur->length; ++i)
+		fprintf(stderr, "%c", *cur->position+i);
+	fprintf(stderr, ".");
+}
+
 inline bool expect_number() {
 	return cur->kind == tNumber;
 }
@@ -66,6 +73,18 @@ Node *new_binary_node(NodeKind kind, Node *lhs, Node *rhs) {
 	return node;
 }
 
+Node *new_if_node(Node *cond, Node *if_true) {
+	Node *node = new Node;
+	if (node == nullptr) {
+		fprintf(stderr, "Error: Out of memory.\n");
+		exit(1);
+	}
+	node->kind = nIf;
+	node->cond = cond;
+	node->lhs = if_true;
+	return node;
+}
+
 Node *new_number_node(long value) {
 	Node *node = new Node;
 	node->kind = nNumber;
@@ -92,17 +111,34 @@ Node *statement() {
 	Node *node;
 	if (read_operator(dReturn)) {
 		node = new_unary_node(nReturn, expr());
+		if (!read_operator(dSemiColon)) {
+			error_();
+			exit(1);
+		}
+	} else if (read_operator(dIf)) {
+		if (!read_operator(dOParenthesis)) {
+			error_();
+			exit(1);
+		}
+		Node *cond = expr();
+		if (!read_operator(dCParenthesis)) {
+			error_();
+			exit(1);
+		}
+		node = statement();
+		node = new_if_node(cond, node);
+		if (read_operator(dElse)) {
+			node->rhs = statement();
+		}
 	} else {
 		node = expr();
+		if (!read_operator(dSemiColon)) {
+			error_();
+			exit(1);
+		}
 	}
 	
-	if (!read_operator(dSemiColon)) {
-		fprintf(stderr, "Unexpected token: ");
-		for (unsigned int i = 0; i < cur->length; ++i)
-			fprintf(stderr, "%c", *cur->position+i);
-		fprintf(stderr, ".");
-		exit(1);
-	}
+	
 	return node;
 }
 

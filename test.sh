@@ -49,5 +49,13 @@ assert 15 'a = 7; z = 8; c=a+z; c;'
 assert 42 'hoge=42;hoge;'
 assert 42 'hoge=21;fuga=2;piyo=hoge*fuga;piyo;'
 
+assert 42 'hoge=42; return hoge;'
+assert 126 'hoge=42; return hoge* 3;'
+
+assert 42 'hoge = 42; if (hoge) return 42;'
+assert 21 'hoge = 0; if (hoge) return 1; return 21;'
+assert 42 'hoge = 42; if (hoge == 42) return hoge; else return 0;'
+assert 42 'hoge = 0; if (hoge == 42) return 12; else return 42;' 
+
 echo "=== ALL TESTS PASSED ==="
 echo
