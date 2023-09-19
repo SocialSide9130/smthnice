@@ -75,6 +75,18 @@ void codegen(Node *node) {
 		printasm(0, ".Lend%d:", label_number);
 		++label_number;
 		return;
+	case nWhile:
+		printasm(0, ".Lwhile%d:", label_number);
+		codegen(node->cond);
+		printasm(1, "pop rax");
+		printasm(1, "cmp rax, 0");
+		printasm(1, "je .Lend%d", label_number);
+		codegen(node->lhs);
+		printasm(1, "jmp .Lwhile%d", label_number);
+		printasm(0, ".Lend%d:", label_number);
+		return;
+	case nFor:
+		return;
 	}
 
 

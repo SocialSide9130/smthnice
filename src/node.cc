@@ -85,6 +85,18 @@ Node *new_if_node(Node *cond, Node *if_true) {
 	return node;
 }
 
+Node *new_whlie_node(Node *cond, Node *stmt) {
+	Node *node = new Node;
+	if (node == nullptr) {
+		fprintf(stderr, "Error: Out of memory.\n");
+		exit(1);
+	}
+	node->kind = nWhile;
+	node->cond = cond;
+	node->lhs = stmt;
+	return node;
+}
+
 Node *new_number_node(long value) {
 	Node *node = new Node;
 	node->kind = nNumber;
@@ -129,6 +141,27 @@ Node *statement() {
 		node = new_if_node(cond, node);
 		if (read_operator(dElse)) {
 			node->rhs = statement();
+		}
+	} else if (read_operator(dWhile)) {
+		if (!read_operator(dOParenthesis)) {
+			error_();
+			exit(1);
+		}
+		Node *cond = expr();
+		if (!read_operator(dCParenthesis)) {
+			error_();
+			exit(1);
+		}
+		node = new_whlie_node(cond, statement());
+	} else if (read_operator(dFor)) {
+		if (!read_operator(dOParenthesis)) {
+			error_();
+			exit(1);
+		}
+		Node *cond = expr();
+		if (!read_operator(dCParenthesis)) {
+			error_();
+			exit(1);
 		}
 	} else {
 		node = expr();

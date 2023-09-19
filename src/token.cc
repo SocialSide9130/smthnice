@@ -329,24 +329,43 @@ Token *tokenize(char *code) {
 			continue;
 		}
 
-		if (strncmp("return", p, 6) == 0 && !is_alpha_or_number(p[6])) {
-			cur->next = new_operator_token(dReturn, p, 6);
+		int magic_number = 6;
+		if (strncmp("return", p, magic_number) == 0 && !is_alpha_or_number(p[magic_number])) {
+			cur->next = new_operator_token(dReturn, p, magic_number);
 			cur = cur->next;
-			p += 6;
+			p += magic_number;
 			continue;
 		}
 
-		if (strncmp("if", p, 2) == 0 && !is_alpha_or_number(p[2])) {
-			cur->next = new_operator_token(dIf, p, 2);
+		magic_number = 2;
+		if (strncmp("if", p, magic_number) == 0 && !is_alpha_or_number(p[magic_number])) {
+			cur->next = new_operator_token(dIf, p, magic_number);
 			cur = cur->next;
-			p += 2;
+			p += magic_number;
 			continue;
 		}
 
-		if (strncmp("else", p, 4) == 0 && !is_alpha_or_number(p[4])) {
-			cur->next = new_operator_token(dElse, p, 4);
+		magic_number = 4;
+		if (strncmp("else", p, magic_number) == 0 && !is_alpha_or_number(p[magic_number])) {
+			cur->next = new_operator_token(dElse, p, magic_number);
 			cur = cur->next;
-			p += 4;
+			p += magic_number;
+			continue;
+		}
+		
+		magic_number = 5;
+		if (strncmp("while", p, magic_number) == 0 && !is_alpha_or_number(p[magic_number])) {
+			cur->next = new_operator_token(dWhile, p, magic_number);
+			cur = cur->next;
+			p += magic_number;
+			continue;
+		}
+
+		magic_number = 3;
+		if (strncmp("for", p, magic_number) == 0 && !is_alpha_or_number(p[magic_number])) {
+			cur->next = new_operator_token(dFor, p, magic_number);
+			cur = cur->next;
+			p += magic_number;
 			continue;
 		}
 
