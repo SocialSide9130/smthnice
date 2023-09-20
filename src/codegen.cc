@@ -101,6 +101,12 @@ void codegen(Node *node) {
 		printasm(0, ".Lend%d:", label_number);
 		--label_number;
 		return;
+	case nBlock:
+		for (int i = 0; node->vector[i]; ++i) {
+			codegen(node->vector[i]);
+			printasm(1, "pop rax");
+		}
+		return;
 	}
 
 

@@ -136,12 +136,14 @@ Node *parse(Token *token) {
 Node *statement() {
 	Node *node;
 	if (read_operator(dReturn)) {
+		// "return"
 		node = new_unary_node(nReturn, expr());
 		if (!read_operator(dSemiColon)) {
 			error_();
 			exit(1);
 		}
 	} else if (read_operator(dIf)) {
+		// "if"
 		if (!read_operator(dOParenthesis)) {
 			error_();
 			exit(1);
@@ -154,9 +156,11 @@ Node *statement() {
 		node = statement();
 		node = new_if_node(cond, node);
 		if (read_operator(dElse)) {
+			// "else"
 			node->rhs = statement();
 		}
 	} else if (read_operator(dWhile)) {
+		// "while"
 		if (!read_operator(dOParenthesis)) {
 			error_();
 			exit(1);
@@ -168,6 +172,7 @@ Node *statement() {
 		}
 		node = new_whlie_node(cond, statement());
 	} else if (read_operator(dFor)) {
+		// "for"
 		Node *init, *cond, *step;
 		if (!read_operator(dOParenthesis)) {
 			error_();
@@ -195,6 +200,20 @@ Node *statement() {
 			exit(1);
 		}
 		node = new_for_node(init, cond, step, statement());
+	} else if (read_operator(dOCuBracket)) {
+		// "{"
+		// 最大128文
+		Node **vector;
+		node = new Node;
+		vector = new Node*[128];
+		int stmt_index = 0;
+
+		while (!read_operator(dCCuBracket)) {
+			vector[stmt_index] = statement();
+			++stmt_index;
+		}
+		node->kind = nBlock;
+		node->vector = vector;
 	} else {
 		node = expr();
 		if (!read_operator(dSemiColon)) {
