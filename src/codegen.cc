@@ -60,6 +60,7 @@ void codegen(Node *node) {
 		printasm(1, "ret");
 		return;
 	case nIf:
+		++label_number;
 		codegen(node->cond);
 		printasm(1, "pop rax");
 		printasm(1, "cmp rax, 0");
@@ -73,9 +74,9 @@ void codegen(Node *node) {
 		}
 		codegen(node->lhs);
 		printasm(0, ".Lend%d:", label_number);
-		++label_number;
 		return;
 	case nWhile:
+		++label_number;
 		printasm(0, ".Lwhile%d:", label_number);
 		codegen(node->cond);
 		printasm(1, "pop rax");
@@ -84,8 +85,21 @@ void codegen(Node *node) {
 		codegen(node->lhs);
 		printasm(1, "jmp .Lwhile%d", label_number);
 		printasm(0, ".Lend%d:", label_number);
+		--label_number;
 		return;
 	case nFor:
+		++label_number;
+		codegen(node->init);
+		printasm(0, ".Lfor%d:", label_number);
+		codegen(node->cond);
+		printasm(1, "pop rax");
+		printasm(1, "cmp rax, 0");
+		printasm(1, "je .Lend%d", label_number);
+		codegen(node->lhs);
+		codegen(node->rhs);
+		printasm(1, "jmp .Lfor%d", label_number);
+		printasm(0, ".Lend%d:", label_number);
+		--label_number;
 		return;
 	}
 

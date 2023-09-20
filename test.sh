@@ -58,6 +58,8 @@ assert 42 'hoge = 42; if (hoge == 42) return hoge; else return 0;'
 assert 42 'hoge = 0; if (hoge == 42) return 12; else return 42;' 
 
 assert 42 'hoge = 0; while (hoge < 42) hoge = hoge + 1; return hoge;'
+assert 15 'hoge = 0; for (i = 0; i < 5; i = i + 1) hoge = hoge + 3; return hoge;'
+assert 15 'hoge = 0; for (i = 0; i < 5; i = i + 1) for (j = 0; j < 3; j = j + 1) hoge = hoge + 1; return hoge;'
 
 echo "=== ALL TESTS PASSED ==="
 echo

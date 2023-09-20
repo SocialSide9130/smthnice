@@ -97,6 +97,20 @@ Node *new_whlie_node(Node *cond, Node *stmt) {
 	return node;
 }
 
+Node *new_for_node(Node *init, Node *cond, Node *step, Node *stmt) {
+	Node *node = new Node;
+	if (node == nullptr) {
+		fprintf(stderr, "Erro: Out of memory.\n");
+		exit(1);
+	}
+	node->kind = nFor;
+	node->init = init;
+	node->cond = cond;
+	node->lhs = stmt;
+	node->rhs = step;
+	return node;
+}
+
 Node *new_number_node(long value) {
 	Node *node = new Node;
 	node->kind = nNumber;
@@ -154,15 +168,33 @@ Node *statement() {
 		}
 		node = new_whlie_node(cond, statement());
 	} else if (read_operator(dFor)) {
+		Node *init, *cond, *step;
 		if (!read_operator(dOParenthesis)) {
 			error_();
 			exit(1);
 		}
-		Node *cond = expr();
+		if (!read_operator(dSemiColon)) {
+			init = expr();
+			if (!read_operator(dSemiColon)) {
+				error_();
+				exit(1);
+			}
+		} else init = nullptr;
+		if (!read_operator(dSemiColon)) {
+			cond = expr();
+			if (!read_operator(dSemiColon)) {
+				error_();
+				exit(1);
+			}
+		} else cond = nullptr;
+		if (!read_operator(dSemiColon)) {
+			step = expr();
+		} else step = nullptr;
 		if (!read_operator(dCParenthesis)) {
 			error_();
 			exit(1);
 		}
+		node = new_for_node(init, cond, step, statement());
 	} else {
 		node = expr();
 		if (!read_operator(dSemiColon)) {

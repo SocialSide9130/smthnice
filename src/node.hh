@@ -26,7 +26,7 @@ typedef struct Node Node;
 struct Node {
 	NodeKind kind;
 	long value;
-	Node *cond, *lhs, *rhs;
+	Node *init, *cond, *lhs, *rhs;
 	int offset;
 };
 
