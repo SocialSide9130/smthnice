@@ -107,6 +107,11 @@ void codegen(Node *node) {
 			printasm(1, "pop rax");
 		}
 		return;
+	case nFunctionCall:
+		char functionname[128];
+		snprintf(functionname, node->function->length+1, "%s", node->function->name);
+		printasm(1, "call %s", functionname);
+		return;
 	}
 
 

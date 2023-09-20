@@ -324,24 +324,38 @@ Node *elem() {
 	}
 
 	if (expect_identifier()) {
-		LocalVariable *lvar;
-		Node *node;
-
-		lvar = find_localvariable();
-		node = new Node;
-		node->kind = nLocalVariable;
-		if (lvar != nullptr) {
-			node->offset = lvar->offset;
+		Node *node = new Node;
+		if (cur->next->detail == dOParenthesis) {
+			node->kind = nFunctionCall;
+			node->function = new Function;
+			node->function->name = cur->position;
+			node->function->length = cur->length;
+			cur = cur->next;
+			read_operator(dOParenthesis);
+			// 引数リストの処理など...
+			if (!read_operator(dCParenthesis)) {
+				error_();
+				exit(1);
+			}
 		} else {
-			lvar = new LocalVariable;
-			lvar->next = localvariables;
-			lvar->name = cur->position;
-			lvar->length = cur->length;
-			lvar->offset = localvariables->offset + 8;
-			node->offset = lvar->offset;
-			localvariables = lvar;
+			LocalVariable *lvar;
+			// Node *node;
+
+			lvar = find_localvariable();
+			node->kind = nLocalVariable;
+			if (lvar != nullptr) {
+				node->offset = lvar->offset;
+			} else {
+				lvar = new LocalVariable;
+				lvar->next = localvariables;
+				lvar->name = cur->position;
+				lvar->length = cur->length;
+				lvar->offset = localvariables->offset + 8;
+				node->offset = lvar->offset;
+				localvariables = lvar;
+			}
+			cur = cur->next;
 		}
-		cur = cur->next;
 		return node;
 	}
 

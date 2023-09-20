@@ -3,6 +3,9 @@
 #ifndef SmthNice_node
 #define SmthNice_node
 
+typedef struct Function Function;
+typedef struct Node Node;
+
 typedef enum {
 	nNumber,
 	nAdd,
@@ -21,13 +24,20 @@ typedef enum {
 	nFor,
 	nLocalVariable,
 	nBlock,
+	nFunctionCall,
 } NodeKind;
 
-typedef struct Node Node;
+struct Function {
+	char *name;
+	unsigned int length;
+	Node **arguments;
+};
+
 struct Node {
 	NodeKind kind;
 	long value;
 	Node *init, *cond, *lhs, *rhs, **vector;
+	Function *function;
 	int offset;
 };
 
