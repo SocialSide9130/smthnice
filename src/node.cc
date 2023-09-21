@@ -9,6 +9,7 @@
 Token *cur;
 Node *code[128];
 
+
 typedef struct LocalVariable LocalVariable;
 struct LocalVariable {
 	LocalVariable *next;
@@ -19,6 +20,7 @@ struct LocalVariable {
 
 LocalVariable *localvariables;
 
+// Utilities
 void error_() {
 	fprintf(stderr, "Unexpected token: ");
 	for (unsigned int i = 0; i < cur->length; ++i)
@@ -119,13 +121,58 @@ Node *new_number_node(long value) {
 	return node;
 }
 
+
+// Parsing
 void program(Token *token) {
 	int i = 0;
 	cur = token;
 	localvariables = new LocalVariable;
 	while (cur->kind != tEof)
-		code[i++] = statement();
+		code[i++] = function_def();
 	code[i] = nullptr;
+}
+
+Node *function_def() {
+	Node *node = new Node;
+	
+	if (expect_identifier()) {
+		node->kind = nFunctionDefinition;
+		node->function = new Function;
+		node->function->body = new Node*[128];
+		
+		node->function->name = cur->position;
+		node->function->length = cur->length;
+		cur = cur->next;
+		if (read_operator(dOParenthesis)) {
+			/*
+				引数リストの処理など...
+			*/
+			if (!read_operator(dCParenthesis)) {
+				error_();
+				exit(1);
+			}
+			if (!read_operator(dOCuBracket)) {
+				error_();
+				exit(1);
+			}
+			for (int i = 0; i < 128; ++i) {
+				node->function->body[i] = statement();
+				if (cur->detail == dCCuBracket)
+					break;
+			}
+			if (!read_operator(dCCuBracket)) {
+				error_();
+				exit(1);
+			}
+		} else {
+			error_();
+			exit(1);
+		}
+	} else {
+		error_();
+		exit(1);
+	}
+	return node;
 }
 
 Node *parse(Token *token) {

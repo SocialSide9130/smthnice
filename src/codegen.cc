@@ -5,6 +5,8 @@
 
 int label_number;
 
+Function *functions_list;
+
 void printasm(int tabs, const char *format, ...) {
 	va_list args;
 	
@@ -18,10 +20,13 @@ void printasm(int tabs, const char *format, ...) {
 }
 
 void prologue() {
-	
+	printasm(1, "push rbp");
+	printasm(1, "mov rbp, rsp");	
 }
 
 void epilogue() {
+	printasm(1, "mov rsp, rbp");
+	printasm(1, "pop rbp");
 	printasm(1, "pop rax");
 	printasm(1, "ret");
 }
@@ -33,6 +38,8 @@ void gen_leftvalue(Node *node) {
 }
 
 void codegen(Node *node) {
+	char function_name[128];
+	const char *register_name[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 	switch (node->kind) {
 	case nNumber:
 		printasm(1, "push %d", node->value);
@@ -108,8 +115,6 @@ void codegen(Node *node) {
 		}
 		return;
 	case nFunctionCall:
-		char function_name[128];
-		const char *register_name[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 		for (unsigned int i = 0; i < node->function->arguments_number; ++i) {
 			codegen(node->function->arguments[i]);
 		}
@@ -118,6 +123,15 @@ void codegen(Node *node) {
 		snprintf(function_name, node->function->length+1, "%s", node->function->name);
 		printasm(1, "call %s", function_name);
 		printasm(1, "push rax");
+		return;
+	case nFunctionDefinition:
+		snprintf(function_name, node->function->length+1, "%s", node->function->name);
+		printasm(0, "%s:", function_name);
+		prologue();
+		for (int i = 0; i < 128 && node->function->body[i]; ++i) {
+			codegen(node->function->body[i]);
+		}
+		epilogue();
 		return;
 	}
 

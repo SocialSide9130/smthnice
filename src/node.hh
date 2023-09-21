@@ -25,12 +25,14 @@ typedef enum {
 	nLocalVariable,
 	nBlock,
 	nFunctionCall,
+	nFunctionDefinition,
 } NodeKind;
 
 struct Function {
+	Function *next;
 	char *name;
 	unsigned int length, arguments_number;
-	Node **arguments;
+	Node **arguments, **body;
 };
 
 struct Node {
@@ -41,16 +43,17 @@ struct Node {
 	int offset;
 };
 
-void     program(Token *token);
-Node      *parse(Token *token);
-Node  *statement(            );
-Node       *expr(            );
-Node     *assign(            );
-Node   *equality(            );
-Node *relational(            );
-Node        *add(            );
-Node        *mul(            );
-Node      *unary(            );
-Node       *elem(            );
+void       program(Token *token);
+Node        *parse(Token *token);
+Node *function_def(            );
+Node    *statement(            );
+Node         *expr(            );
+Node       *assign(            );
+Node     *equality(            );
+Node   *relational(            );
+Node          *add(            );
+Node          *mul(            );
+Node        *unary(            );
+Node         *elem(            );
 
 #endif
