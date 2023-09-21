@@ -29,7 +29,7 @@ typedef enum {
 
 struct Function {
 	char *name;
-	unsigned int length;
+	unsigned int length, arguments_number;
 	Node **arguments;
 };
 

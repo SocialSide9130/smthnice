@@ -108,9 +108,16 @@ void codegen(Node *node) {
 		}
 		return;
 	case nFunctionCall:
-		char functionname[128];
-		snprintf(functionname, node->function->length+1, "%s", node->function->name);
-		printasm(1, "call %s", functionname);
+		char function_name[128];
+		const char *register_name[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+		for (unsigned int i = 0; i < node->function->arguments_number; ++i) {
+			codegen(node->function->arguments[i]);
+		}
+		for (int i = node->function->arguments_number-1; i >= 0; --i)
+			printasm(1, "pop %s", register_name[i]);
+		snprintf(function_name, node->function->length+1, "%s", node->function->name);
+		printasm(1, "call %s", function_name);
+		printasm(1, "push rax");
 		return;
 	}
 

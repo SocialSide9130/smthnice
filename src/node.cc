@@ -330,9 +330,17 @@ Node *elem() {
 			node->function = new Function;
 			node->function->name = cur->position;
 			node->function->length = cur->length;
+			node->function->arguments = new Node*[6];
 			cur = cur->next;
 			read_operator(dOParenthesis);
-			// 引数リストの処理など...
+			// 引数リストの処理
+			if (cur->detail != dCParenthesis) {
+				node->function->arguments_number = 0;
+				for (; cur->detail != dCParenthesis; ++node->function->arguments_number) {
+					node->function->arguments[node->function->arguments_number] = expr();
+					read_operator(dComma);
+				}
+			}
 			if (!read_operator(dCParenthesis)) {
 				error_();
 				exit(1);
