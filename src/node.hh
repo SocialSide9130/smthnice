@@ -28,11 +28,20 @@ typedef enum {
 	nFunctionDefinition,
 } NodeKind;
 
-struct Function {
-	Function *next;
+typedef struct LocalVariable LocalVariable;
+struct LocalVariable {
+	LocalVariable *next;
 	char *name;
-	unsigned int length, arguments_number;
-	Node **arguments, **body;
+	unsigned int length;
+	int offset;
+};
+
+
+struct Function {
+	char *name;
+	unsigned int length, argument_number;
+	Node **body, **arguments;
+	LocalVariable *locals, *arguments_var;
 };
 
 struct Node {

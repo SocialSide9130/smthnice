@@ -9,15 +9,6 @@
 Token *cur;
 Node *code[128];
 
-
-typedef struct LocalVariable LocalVariable;
-struct LocalVariable {
-	LocalVariable *next;
-	char *name;
-	unsigned int length;
-	int offset;
-};
-
 LocalVariable *localvariables;
 
 // Utilities
@@ -40,8 +31,23 @@ bool read_operator(OperatorDetail symbol) {
 	return false;
 }
 
-LocalVariable *find_localvariable() {
-	for (LocalVariable *var = localvariables; var; var = var->next) {
+LocalVariable *new_localvariable(LocalVariable *context) {
+	LocalVariable *var = new LocalVariable;
+	if (cur->kind != tIdentifier) {
+		error_();
+		exit(1);
+	}
+	var->next = context;
+	var->name = cur->position;
+	var->length = cur->length;
+	var->offset = context->offset + 8;
+	return var;
+}
+
+LocalVariable *find_localvariable(LocalVariable *context) {
+	LocalVariable *var;
+	var = context;
+	for (var; var; var = var->next) {
 		if (var->length == cur->length && !memcmp(var->name, cur->position, var->length))
 			return var;
 	}
@@ -142,11 +148,21 @@ Node *function_def() {
 		
 		node->function->name = cur->position;
 		node->function->length = cur->length;
+		node->function->arguments_var = new LocalVariable;
+		node->function->locals = new LocalVariable;
 		cur = cur->next;
 		if (read_operator(dOParenthesis)) {
-			/*
-				引数リストの処理など...
-			*/
+			if (cur->detail != dCParenthesis) {
+				for (node->function->argument_number = 0;
+				node->function->argument_number <= 6 &&
+				cur->detail != dCParenthesis;
+				++node->function->argument_number) {
+					node->function->arguments_var = new_localvariable(node->function->arguments_var);
+					node->function->locals = new_localvariable(node->function->locals);
+					cur = cur->next;
+					read_operator(dComma);
+				}
+			}
 			if (!read_operator(dCParenthesis)) {
 				error_();
 				exit(1);
@@ -382,9 +398,9 @@ Node *elem() {
 			read_operator(dOParenthesis);
 			// 引数リストの処理
 			if (cur->detail != dCParenthesis) {
-				node->function->arguments_number = 0;
-				for (; cur->detail != dCParenthesis; ++node->function->arguments_number) {
-					node->function->arguments[node->function->arguments_number] = expr();
+				node->function->argument_number = 0;
+				for (; cur->detail != dCParenthesis; ++node->function->argument_number) {
+					node->function->arguments[node->function->argument_number] = expr();
 					read_operator(dComma);
 				}
 			}
@@ -396,7 +412,7 @@ Node *elem() {
 			LocalVariable *lvar;
 			// Node *node;
 
-			lvar = find_localvariable();
+			lvar = find_localvariable(localvariables);
 			node->kind = nLocalVariable;
 			if (lvar != nullptr) {
 				node->offset = lvar->offset;

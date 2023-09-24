@@ -115,10 +115,10 @@ void codegen(Node *node) {
 		}
 		return;
 	case nFunctionCall:
-		for (unsigned int i = 0; i < node->function->arguments_number; ++i) {
+		for (unsigned int i = 0; i < node->function->argument_number; ++i) {
 			codegen(node->function->arguments[i]);
 		}
-		for (int i = node->function->arguments_number-1; i >= 0; --i)
+		for (int i = node->function->argument_number-1; i >= 0; --i)
 			printasm(1, "pop %s", register_name[i]);
 		snprintf(function_name, node->function->length+1, "%s", node->function->name);
 		printasm(1, "call %s", function_name);
@@ -128,6 +128,16 @@ void codegen(Node *node) {
 		snprintf(function_name, node->function->length+1, "%s", node->function->name);
 		printasm(0, "%s:", function_name);
 		prologue();
+		LocalVariable *arg = node->function->arguments_var;
+		if (node->function->locals->offset > 0) {
+			printasm(1, "mov rax, rbp");
+			printasm(1, "sub rax, %d", node->function->locals->offset);
+			printasm(1, "mov rsp, rax");
+		}
+		for (int u = node->function->argument_number-1; u >= 0 && arg->next; --u) {
+			printasm(1, "mov -%d[rbp], %s", arg->offset, register_name[u]);
+			arg = arg->next;
+		}
 		for (int i = 0; i < 128 && node->function->body[i]; ++i) {
 			codegen(node->function->body[i]);
 		}
