@@ -16,6 +16,8 @@ typedef enum {
 	nNotEqual,
 	nLess,
 	nLessEqual,
+	nRef,
+	nDeref,
 	nAssign,
 	nReturn,
 	nIf,

@@ -57,11 +57,19 @@ echo "=== TESTS ==="
 # assert 42 'hoge = 42; if (hoge == 42) return hoge; else return 0;'
 # assert 42 'hoge = 0; if (hoge == 42) return 12; else return 42;' 
 # 
-# assert 42 'hoge = 0; while (hoge < 42) hoge = hoge + 1; return hoge;'
-# assert 15 'hoge = 0; for (i = 0; i < 5; i = i + 1) hoge = hoge + 3; return hoge;'
-# assert 15 'hoge = 0; for (i = 0; i < 5; i = i + 1) for (j = 0; j < 3; j = j + 1) hoge = hoge + 1; return hoge;'
+
+assert 15 'main(){hoge = 0; i = 0; while (i < 5) { hoge = hoge + 3; i = i + 1;} return hoge;}'
+assert 42 'main(){hoge = 0; while (hoge < 42) hoge = hoge + 1; return hoge;}'
+assert 15 'main(){hoge = 0; for (i = 0; i < 5; i = i + 1) hoge = hoge + 3; return hoge;}'
+assert 15 'main(){hoge = 0; for (i = 0; i < 5; i = i + 1) {for (j = 0; j < 3; j = j + 1) {hoge = hoge + 1;}} return hoge;}'
 
 assert 42 'three() {return 3;} main() {return three() * 14;}'
+assert 120 'fact(n) {if (n == 1) return 1; return n * fact(n-1);} main() {return fact(5);}'
+assert 50 'square(n) {return n * n;} dbl(n) {return 2 * n;} main() {return dbl(square(5));}'
+assert 12 's() {n = 5; return a(3);} a(n) {return n;} main() {n = 44; return 4 * s();}'
+assert 42 'main() {n = 42; return *(&n);}'
+assert 42 'main() {a = 42; b = 24; return *(&b+8);}'
+assert 42 'main() {a = 24; b = 42; return *(&a-8);}'
 
 echo "=== ALL TESTS PASSED ==="
 echo
