@@ -7,7 +7,7 @@
 
 
 Token *cur;
-Node *code[128];
+Node *code;
 
 LocalVariable *localvariables;
 
@@ -119,6 +119,20 @@ Node *new_for_node(Node *init, Node *cond, Node *step, Node *stmt) {
 	return node;
 }
 
+Node *new_block() {
+	Node *ret, *head, *block;
+	ret = new Node;
+	block = new Node;
+	ret->kind = nBlock;
+	head = block;
+	for (cur; cur->detail != dCCuBracket; block = block->next) {
+		block->next = statement();
+	}
+	block->next = nullptr;
+	ret->body = head->next;
+	return ret;
+}
+
 Node *new_number_node(long value) {
 	Node *node = new Node;
 	node->kind = nNumber;
@@ -133,9 +147,7 @@ void program(Token *token) {
 	int i = 0;
 	cur = token;
 	localvariables = new LocalVariable;
-	while (cur->kind != tEof)
-		code[i++] = function_def();
-	code[i] = nullptr;
+	code = statement();
 }
 
 Node *function_def() {
@@ -264,19 +276,8 @@ Node *statement() {
 		}
 		node = new_for_node(init, cond, step, statement());
 	} else if (read_operator(dOCuBracket)) {
-		// "{"
-		// 最大128文
-		Node **vector;
-		node = new Node;
-		vector = new Node*[128];
-		int stmt_index = 0;
-
-		while (!read_operator(dCCuBracket)) {
-			vector[stmt_index] = statement();
-			++stmt_index;
-		}
-		node->kind = nBlock;
-		node->vector = vector;
+		node = new_block();
+		read_operator(dCCuBracket);
 	} else {
 		node = expr();
 		if (!read_operator(dSemiColon)) {

@@ -109,10 +109,13 @@ void codegen(Node *node) {
 		--label_number;
 		return;
 	case nBlock:
-		for (int i = 0; node->vector[i]; ++i) {
-			codegen(node->vector[i]);
-			printasm(1, "pop rax");
+		Node *block;
+		block = node->body;
+		while (block) {
+			codegen(block);
+			block = block->next;
 		}
+		// printasm(1, "pop rax");
 		return;
 	case nFunctionCall:
 		for (unsigned int i = 0; i < node->function->argument_number; ++i) {

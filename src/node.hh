@@ -47,7 +47,7 @@ struct Function {
 struct Node {
 	NodeKind kind;
 	long value;
-	Node *init, *cond, *lhs, *rhs, **vector;
+	Node *init, *cond, *lhs, *rhs, *next, *body;
 	Function *function;
 	int offset;
 };
