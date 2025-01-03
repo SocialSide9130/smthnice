@@ -20,13 +20,14 @@ typedef enum {
 	nWhile,
 	nFor,
 	nLocalVariable,
+	nBlock,
 } NodeKind;
 
 typedef struct Node Node;
 struct Node {
 	NodeKind kind;
 	long value;
-	Node *init, *cond, *lhs, *rhs;
+	Node *init, *cond, *lhs, *rhs, *next, *body;
 	int offset;
 };
 

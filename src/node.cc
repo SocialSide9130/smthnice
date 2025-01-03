@@ -7,7 +7,7 @@
 
 
 Token *cur;
-Node *code[128];
+Node *code;
 
 typedef struct LocalVariable LocalVariable;
 struct LocalVariable {
@@ -111,6 +111,20 @@ Node *new_for_node(Node *init, Node *cond, Node *step, Node *stmt) {
 	return node;
 }
 
+Node *new_block() {
+	Node *ret, *head, *block;
+	ret = new Node;
+	block = new Node;
+	ret->kind = nBlock;
+	head = block;
+	for (cur; cur->detail != dCCuBracket; block = block->next) {
+		block->next = statement();
+	}
+	block->next = nullptr;
+	ret->body = head->next;
+	return ret;
+}
+
 Node *new_number_node(long value) {
 	Node *node = new Node;
 	node->kind = nNumber;
@@ -123,9 +137,10 @@ void program(Token *token) {
 	int i = 0;
 	cur = token;
 	localvariables = new LocalVariable;
-	while (cur->kind != tEof)
-		code[i++] = statement();
-	code[i] = nullptr;
+	code = statement();
+	// while (cur->kind != tEof)
+	// 	code[i++] = statement();
+	// code[i] = nullptr;
 }
 
 Node *parse(Token *token) {
@@ -195,6 +210,9 @@ Node *statement() {
 			exit(1);
 		}
 		node = new_for_node(init, cond, step, statement());
+	} else if (read_operator(dOCuBracket)) {
+		node = new_block();
+		read_operator(dCCuBracket);
 	} else {
 		node = expr();
 		if (!read_operator(dSemiColon)) {

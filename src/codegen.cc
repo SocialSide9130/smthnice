@@ -101,6 +101,14 @@ void codegen(Node *node) {
 		printasm(0, ".Lend%d:", label_number);
 		--label_number;
 		return;
+	case nBlock:
+		Node *block;
+		block = node->body;
+		while (block) {
+			codegen(block);
+			block = block->next;
+		}
+		return;
 	}
 
 

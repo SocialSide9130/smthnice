@@ -6,7 +6,7 @@
 #include "node.hh"
 #include "codegen.hh"
 
-extern Node *code[128];
+extern Node *code;
 
 int main(int argc, char *argv[]) {
 	char *src;
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 #endif
 	Token *tokens = tokenize(src);
 	program(tokens);
-	Node **node = code;
+	Node *node = code;
 
 	// prologue();
 	printasm(0, ".intel_syntax noprefix");
@@ -29,11 +29,11 @@ int main(int argc, char *argv[]) {
 	printasm(1, "push rbp");
 	printasm(1, "mov rbp, rsp");
 	printasm(1, "sub rsp, 208");
-	while (*node) {
-		codegen(*node);
+	while (node) {
+		codegen(node);
 		printasm(1, "pop rax");
 		// epilogue();
-		++node;
+		node = node->next;
 	}
 
 	printasm(1, "mov rsp, rbp");
