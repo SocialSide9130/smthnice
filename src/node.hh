@@ -51,6 +51,7 @@ struct Node {
 	long value;
 	Node *init, *cond, *lhs, *rhs, *next, *body;
 	Function *function;
+	LocalVariable *locals;
 	int offset;
 };
 
