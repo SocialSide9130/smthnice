@@ -40,7 +40,7 @@ struct LocalVariable {
 struct Function {
 	char *name;
 	unsigned int length, argument_number;
-	Node **body, **arguments;
+	Node *body, **arguments;
 	LocalVariable *locals, *arguments_var;
 };
 

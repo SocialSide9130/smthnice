@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
 
 	
 	// printasm(1, "sub rsp, 208"); 
-	while (*node) {
-		codegen(*node);
+	while (node) {
+		codegen(node);
 		// epilogue();
 		node = node->next;
 	}

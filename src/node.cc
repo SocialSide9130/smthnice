@@ -9,6 +9,7 @@
 Token *cur;
 Node *code;
 
+// TODO: Fix this
 LocalVariable *localvariables;
 
 // Utilities
@@ -147,7 +148,13 @@ void program(Token *token) {
 	int i = 0;
 	cur = token;
 	localvariables = new LocalVariable;
-	code = statement();
+	Node *p = new Node;
+	code = p;
+	while (cur->kind != tEof) {
+		p->next = function_def();
+		p = p->next;
+	}
+	code = code->next;
 }
 
 Node *function_def() {
@@ -156,7 +163,6 @@ Node *function_def() {
 	if (expect_identifier()) {
 		node->kind = nFunctionDefinition;
 		node->function = new Function;
-		node->function->body = new Node*[128];
 		
 		node->function->name = cur->position;
 		node->function->length = cur->length;
@@ -183,11 +189,7 @@ Node *function_def() {
 				error_();
 				exit(1);
 			}
-			for (int i = 0; i < 128; ++i) {
-				node->function->body[i] = statement();
-				if (cur->detail == dCCuBracket)
-					break;
-			}
+			node->function->body = new_block();
 			if (!read_operator(dCCuBracket)) {
 				error_();
 				exit(1);

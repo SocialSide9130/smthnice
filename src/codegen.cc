@@ -141,9 +141,7 @@ void codegen(Node *node) {
 			printasm(1, "mov -%d[rbp], %s", arg->offset, register_name[u]);
 			arg = arg->next;
 		}
-		for (int i = 0; i < 128 && node->function->body[i]; ++i) {
-			codegen(node->function->body[i]);
-		}
+		codegen(node->function->body);
 		epilogue();
 		return;
 	}
