@@ -16,7 +16,7 @@ void error_() {
 	fprintf(stderr, "Unexpected token: ");
 	for (unsigned int i = 0; i < cur->length; ++i)
 		fprintf(stderr, "%c", *cur->position+i);
-	fprintf(stderr, ".");
+	fprintf(stderr, ".\n");
 }
 
 inline bool expect_number() {
