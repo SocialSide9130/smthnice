@@ -9,7 +9,6 @@
 Token *cur;
 Node *code;
 
-// TODO: Fix this
 LocalVariable *localvariables;
 
 // Utilities
@@ -122,13 +121,17 @@ Node *new_for_node(Node *init, Node *cond, Node *step, Node *stmt) {
 
 Node *new_block() {
 	Node *ret, *head, *block;
+	LocalVariable *lvar = localvariables;
 	ret = new Node;
 	block = new Node;
+	block->locals = new LocalVariable;
 	ret->kind = nBlock;
 	head = block;
+	localvariables = block->locals;
 	for (cur; cur->detail != dCCuBracket; block = block->next) {
 		block->next = statement();
 	}
+	localvariables = lvar;
 	block->next = nullptr;
 	ret->body = head->next;
 	return ret;

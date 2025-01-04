@@ -5,6 +5,7 @@ statement = "return" expr ";"
 			| "while" "(" expr ")" statement
 			| "for" "(" expr ";" expr ";" expr ")" statement
 			| "{" statement* "}"
+			| "int" identifier ";"
 			| expr ";"
 expr = assign
 assign = equality ("=" assign)*
