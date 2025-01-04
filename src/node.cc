@@ -284,6 +284,22 @@ Node *statement() {
 	} else if (read_operator(dOCuBracket)) {
 		node = new_block();
 		read_operator(dCCuBracket);
+	} else if (read_operator(dInt)) {
+		LocalVariable *lvar = new LocalVariable;
+		node = new Node;
+		node->kind = nNothing;
+
+		lvar->next = localvariables;
+		lvar->name = cur->position;
+		lvar->length = cur->length;
+		lvar->offset = localvariables->offset + 8;		
+
+		localvariables = lvar;
+		cur = cur->next;
+		if (!read_operator(dSemiColon)) {
+			error_();
+			exit(1);
+		}
 	} else {
 		node = expr();
 		if (!read_operator(dSemiColon)) {
@@ -432,13 +448,7 @@ Node *elem() {
 			if (lvar != nullptr) {
 				node->offset = lvar->offset;
 			} else {
-				lvar = new LocalVariable;
-				lvar->next = localvariables;
-				lvar->name = cur->position;
-				lvar->length = cur->length;
-				lvar->offset = localvariables->offset + 8;
-				node->offset = lvar->offset;
-				localvariables = lvar;
+				error_();
 			}
 			cur = cur->next;
 		}

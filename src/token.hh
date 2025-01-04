@@ -71,6 +71,7 @@ typedef enum {
 	dReturn           =    detail3('r', 'e', 't'), // "return"
 	dWhile            =    detail3('w', 'h', 'i'), // "while"
 	dFor              =    detail3('f', 'o', 'r'), // "for"
+	dInt              =    detail3('i', 'n', 't'), // "int"
 } OperatorDetail;
 
 typedef struct Token Token;

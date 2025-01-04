@@ -42,6 +42,8 @@ void codegen(Node *node) {
 	const char *register_name[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 	int label;
 	switch (node->kind) {
+	case nNothing:
+		return;
 	case nNumber:
 		printasm(1, "push %d", node->value);
 		return;

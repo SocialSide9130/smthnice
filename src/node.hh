@@ -7,6 +7,7 @@ typedef struct Function Function;
 typedef struct Node Node;
 
 typedef enum {
+	nNothing,
 	nNumber,
 	nAdd,
 	nSub,

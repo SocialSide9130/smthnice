@@ -376,6 +376,14 @@ Token *tokenize(char *code) {
 			continue;
 		}
 
+		magic_number = 3;
+		if (strncmp("int", p, magic_number) == 0 && !is_alpha_or_number(p[magic_number])) {
+			cur->next = new_operator_token(dInt, p, magic_number);
+			cur = cur->next;
+			p += magic_number;
+			continue;
+		}
+
 		if (is_alpha_(*p)) {
 			char *after = p;
 			while (is_alpha_or_number(*after))
