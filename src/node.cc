@@ -108,7 +108,7 @@ Node *new_whlie_node(Node *cond, Node *stmt) {
 Node *new_for_node(Node *init, Node *cond, Node *step, Node *stmt) {
 	Node *node = new Node;
 	if (node == nullptr) {
-		fprintf(stderr, "Erro: Out of memory.\n");
+		fprintf(stderr, "Error: Out of memory.\n");
 		exit(1);
 	}
 	node->kind = nFor;
