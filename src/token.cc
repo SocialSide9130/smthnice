@@ -320,6 +320,13 @@ Token *tokenize(char *code) {
 			continue;
 		}
 
+		if (*p == '&') {
+			cur->next = new_operator_token(dAmpersand, p, 1);
+			cur = cur->next;
+			++p;
+			continue;
+		}
+
 		if ('0' <= *p && *p <= '9') {
 			char *after;
 			long value = strtol(p, &after, 10);

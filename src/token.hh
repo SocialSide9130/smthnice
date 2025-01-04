@@ -45,6 +45,7 @@ typedef enum {
 	dSemiColon        =         detail1(';'), //  ";"
 	dColon            =         detail1(':'), //  ":"
 	dPeriod           =         detail1('.'), //  "."
+	dAmpersand        =         detail1('&'), //  "&"
 
 	dDblPlus          =    detail2('+', '+'), // "++"
 	dDblMinus         =    detail2('-', '-'), // "--"

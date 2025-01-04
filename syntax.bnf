@@ -1,0 +1,16 @@
+program = function_def*
+function_def = identifier "(" (argument ("," argument)*)? ")" "{" statement* "}"
+statement = "return" expr ";" 
+			| "if" "(" expr ")" statement ("else" statement)?
+			| "while" "(" expr ")" statement
+			| "for" "(" expr ";" expr ";" expr ")" statement
+			| "{" statement* "}"
+			| expr ";"
+expr = assign
+assign = equality ("=" assign)*
+equality = relational ("==" relational | "!=" relational)*
+relational = add ("<" add | "<=" add | ">=" add | ">" add)*
+add = mul ("+" relational | "-" relational)*
+mul = unary ("*" relational | "/" relational)*
+unary = "+" unary | "-" unary | "&" unary | "*" unary | elem
+elem = (expr) | identifier ("(" (argument ("," argument)*)? ")")? | number

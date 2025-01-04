@@ -168,6 +168,7 @@ Node *function_def() {
 		node->function->length = cur->length;
 		node->function->arguments_var = new LocalVariable;
 		node->function->locals = new LocalVariable;
+		localvariables = node->function->locals;
 		cur = cur->next;
 		if (read_operator(dOParenthesis)) {
 			if (cur->detail != dCParenthesis) {
@@ -374,6 +375,14 @@ Node *unary() {
 
 	if (read_operator(dPlus)) {
 		return unary();
+	}
+
+	if (read_operator(dAsterisk)) {
+		return new_unary_node(nDeref, unary());
+	}
+
+	if (read_operator(dAmpersand)) {
+		return new_unary_node(nRef, unary());
 	}
 
 	return elem();

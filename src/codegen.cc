@@ -40,12 +40,22 @@ void gen_leftvalue(Node *node) {
 void codegen(Node *node) {
 	char function_name[128];
 	const char *register_name[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+	int label;
 	switch (node->kind) {
 	case nNumber:
 		printasm(1, "push %d", node->value);
 		return;
 	case nLocalVariable:
 		gen_leftvalue(node);
+		printasm(1, "pop rax");
+		printasm(1, "mov rax, [rax]");
+		printasm(1, "push rax");
+		return;
+	case nRef:
+		gen_leftvalue(node->lhs);
+		return;
+	case nDeref:
+		codegen(node->lhs);
 		printasm(1, "pop rax");
 		printasm(1, "mov rax, [rax]");
 		printasm(1, "push rax");
@@ -67,46 +77,44 @@ void codegen(Node *node) {
 		printasm(1, "ret");
 		return;
 	case nIf:
-		++label_number;
+		label = ++label_number;
 		codegen(node->cond);
 		printasm(1, "pop rax");
 		printasm(1, "cmp rax, 0");
 		if (node->rhs != nullptr) {
-			printasm(1, "jne .Lelse%d", label_number);
+			printasm(1, "jne .Lelse%d", label);
 			codegen(node->rhs);
-			printasm(1, "jmp .Lend%d", label_number);
-			printasm(0, ".Lelse%d:", label_number);
+			printasm(1, "jmp .Lend%d", label);
+			printasm(0, ".Lelse%d:", label);
 		} else {
-			printasm(1, "je .Lend%d", label_number);
+			printasm(1, "je .Lend%d", label);
 		}
 		codegen(node->lhs);
-		printasm(0, ".Lend%d:", label_number);
+		printasm(0, ".Lend%d:", label);
 		return;
 	case nWhile:
-		++label_number;
-		printasm(0, ".Lwhile%d:", label_number);
+		label = ++label_number;
+		printasm(0, ".Lwhile%d:", label);
 		codegen(node->cond);
 		printasm(1, "pop rax");
 		printasm(1, "cmp rax, 0");
-		printasm(1, "je .Lend%d", label_number);
+		printasm(1, "je .Lend%d", label);
 		codegen(node->lhs);
-		printasm(1, "jmp .Lwhile%d", label_number);
-		printasm(0, ".Lend%d:", label_number);
-		--label_number;
+		printasm(1, "jmp .Lwhile%d", label);
+		printasm(0, ".Lend%d:", label);
 		return;
 	case nFor:
-		++label_number;
+		label = ++label_number;
 		codegen(node->init);
-		printasm(0, ".Lfor%d:", label_number);
+		printasm(0, ".Lfor%d:", label);
 		codegen(node->cond);
 		printasm(1, "pop rax");
 		printasm(1, "cmp rax, 0");
-		printasm(1, "je .Lend%d", label_number);
+		printasm(1, "je .Lend%d", label);
 		codegen(node->lhs);
 		codegen(node->rhs);
-		printasm(1, "jmp .Lfor%d", label_number);
-		printasm(0, ".Lend%d:", label_number);
-		--label_number;
+		printasm(1, "jmp .Lfor%d", label);
+		printasm(0, ".Lend%d:", label);
 		return;
 	case nBlock:
 		Node *block;
